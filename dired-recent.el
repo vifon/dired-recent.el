@@ -50,7 +50,9 @@
   :group 'dired-recent)
 
 (defcustom dired-recent-ignored-prefix nil
-  "A single string or list of strings. Prefixes ignored by
+  "Directories ignored by `dired-recent-mode'.
+
+A single string or list of strings. Prefixes ignored by
 `dired-recent-mode'. Should include the trailing slash if the
 prefix should be treated as a complete directory."
   :type '(choice
@@ -59,8 +61,9 @@ prefix should be treated as a complete directory."
   :group 'dired-recent)
 
 (defcustom dired-recent-max-directories nil
-  "How many last directories should be remembered. `nil' means to
-remember all."
+  "How many last directories should be remembered.
+
+nil means to remember all."
   :type '(choice
           (const :tag "All" nil)
           (integer))
@@ -75,8 +78,7 @@ remember all."
   (dired (completing-read "Dired recent: " dired-recent-directories)))
 
 (defun dired-recent-ignored-p (path prefix)
-  "Check if PATH should be ignored by the dired history due to
-starting with PREFIX."
+  "Check if PATH starts with PREFIX and should be ignored by the dired history."
   (when prefix
     (if (stringp prefix)
         (string-prefix-p prefix path)
@@ -84,8 +86,9 @@ starting with PREFIX."
           (dired-recent-ignored-p path (cdr prefix))))))
 
 (defun dired-recent-path-save (&optional path)
-  "Add PATH or `default-directory' to the dired history. Remove
-the last elements as appropriate according to
+  "Add PATH or `default-directory' to the dired history.
+
+Remove the last elements as appropriate according to
 `dired-recent-max-directories'."
   (let ((path (or path default-directory)))
     (unless (dired-recent-ignored-p (file-name-as-directory path)
