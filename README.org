@@ -1,0 +1,37 @@
+* dired-recent
+  A history of paths visited with Emacs dired.
+
+** Installation 
+   
+   Install from MELPA.
+
+   #+BEGIN_EXAMPLE
+     M-x package-install dired-recent
+   #+END_EXAMPLE
+
+** Usage
+
+   1. Enable the global minor mode.
+
+      #+BEGIN_SRC elisp
+        (dired-recent-mode 1)
+      #+END_SRC
+
+   2. Press =C-x C-d= to select a previously visited directory to
+      open.
+
+      A package like [[https://github.com/abo-abo/swiper#ivy][Ivy]] greatly improves the experience.
+
+** Additional info
+
+   =dired-recent-mode= hijacks the =C-x C-d= key that in theory it
+   shouldn't. I decided that this key is so useless by default and at
+   the same time would make much sense for =dired-recent=, that I'm
+   going to use it. If you're uncomfortable with it, you can unbind it
+   with the following code. Note that =dired-recent= must be already
+   loaded.
+
+   #+BEGIN_SRC elisp
+     (define-key dired-recent-mode-map (kbd "C-x C-d") nil)
+     (define-key dired-recent-mode-map (kbd "SOME OTHER KEY") #'dired-recent-open)
+   #+END_SRC
