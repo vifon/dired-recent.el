@@ -4,6 +4,8 @@
 
 ;; Author: Wojciech Siewierski <wojciech dot siewierski at onet dot pl>
 ;; Keywords: files
+;; Version: 0.9
+;; Package-Requires: ((emacs "24"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
