@@ -131,6 +131,7 @@ Turning it on makes dired save each opened path."
   :group 'dired-recent
   :keymap dired-recent-mode-map
   :global t
+  :require 'dired-recent
   (if dired-recent-mode
       (progn
         (dired-recent-load-list)
