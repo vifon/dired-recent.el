@@ -36,7 +36,7 @@
 
 ;;; Code:
 
-(require 's)
+(require 'dash)
 
 (defgroup dired-recent nil
   "Dired visited paths history."
