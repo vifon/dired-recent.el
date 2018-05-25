@@ -3,6 +3,7 @@
 ;; Copyright (C) 2018  Wojciech Siewierski
 
 ;; Author: Wojciech Siewierski <wojciech dot siewierski at onet dot pl>
+;; URL: https://github.com/vifon/dired-recent
 ;; Keywords: files
 ;; Version: 0.9
 ;; Package-Requires: ((emacs "24"))
@@ -22,8 +23,8 @@
 
 ;;; Commentary:
 
-;; A simple history keeping for dired buffers. All the visited
-;; directories get saved for reuse later. Works great with Ivy and
+;; A simple history keeping for dired buffers.  All the visited
+;; directories get saved for reuse later.  Works great with Ivy and
 ;; other `completing-read' replacements.
 
 ;;  HOW TO USE IT:
@@ -52,8 +53,8 @@
 (defcustom dired-recent-ignored-prefix nil
   "Directories ignored by `dired-recent-mode'.
 
-A single string or list of strings. Prefixes ignored by
-`dired-recent-mode'. Should include the trailing slash if the
+A single string or list of strings.  Prefixes ignored by
+`dired-recent-mode'.  Should include the trailing slash if the
 prefix should be treated as a complete directory."
   :type '(choice
 	  (repeat directory)
@@ -71,7 +72,7 @@ nil means to remember all."
 
 ;;;###autoload
 (defun dired-recent-open ()
-  "Show the dired history. See: `dired-recent-mode'."
+  "Show the dired history.  See: `dired-recent-mode'."
   (interactive)
   (unless dired-recent-directories
     (dired-recent-load-list))
