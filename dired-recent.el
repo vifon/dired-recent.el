@@ -123,7 +123,6 @@ Remove the last elements as appropriate according to
   "Toggle `dired-recent-mode' on or off.
 Turn `dired-recent-mode' if ARG is positive, off otherwise.
 Turning it on makes dired save each opened path."
-  :group 'dired-recent
   :keymap dired-recent-mode-map
   :global t
   :require 'dired-recent
