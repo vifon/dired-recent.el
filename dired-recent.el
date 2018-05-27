@@ -36,6 +36,8 @@
 
 ;;; Code:
 
+(require 'seq)
+
 (defgroup dired-recent nil
   "Dired visited paths history."
   :group 'dired)
