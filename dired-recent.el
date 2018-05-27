@@ -53,9 +53,7 @@
 A single string or list of strings.  Prefixes ignored by
 `dired-recent-mode'.  Should include the trailing slash if the
 prefix should be treated as a complete directory."
-  :type '(choice
-	  (repeat directory)
-	  (directory)))
+  :type '(repeat directory))
 
 (defcustom dired-recent-max-directories nil
   "How many last directories should be remembered.
@@ -74,12 +72,12 @@ nil means to remember all."
   (dired (completing-read "Dired recent: " dired-recent-directories)))
 
 (defun dired-recent-ignored-p (path prefix)
-  "Check if PATH starts with PREFIX and should be ignored by the dired history."
+  "Check if PATH starts with PREFIX and should be ignored by the dired history.
+
+PREFIX is a list of paths that should not be stored in the dired history."
   (when prefix
-    (if (stringp prefix)
-        (string-prefix-p prefix path)
-      (or (string-prefix-p (car prefix) path)
-          (dired-recent-ignored-p path (cdr prefix))))))
+    (or (string-prefix-p (car prefix) path)
+        (dired-recent-ignored-p path (cdr prefix)))))
 
 (defun dired-recent-path-save (&optional path)
   "Add PATH or `default-directory' to the dired history.
