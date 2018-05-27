@@ -45,8 +45,7 @@
 
 (defcustom dired-recent-directories-file (locate-user-emacs-file "dired-history")
   "File with the directories recently visited with dired."
-  :type '(file)
-  :group 'dired-recent)
+  :type '(file))
 
 (defcustom dired-recent-ignored-prefix nil
   "Directories ignored by `dired-recent-mode'.
@@ -56,8 +55,7 @@ A single string or list of strings.  Prefixes ignored by
 prefix should be treated as a complete directory."
   :type '(choice
 	  (repeat directory)
-	  (directory))
-  :group 'dired-recent)
+	  (directory)))
 
 (defcustom dired-recent-max-directories nil
   "How many last directories should be remembered.
@@ -65,8 +63,7 @@ prefix should be treated as a complete directory."
 nil means to remember all."
   :type '(choice
           (const :tag "All" nil)
-          (integer))
-  :group 'dired-recent)
+          (integer)))
 
 ;;;###autoload
 (defun dired-recent-open ()
