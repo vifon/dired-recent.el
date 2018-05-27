@@ -45,7 +45,7 @@
 
 (defcustom dired-recent-directories-file (locate-user-emacs-file "dired-history")
   "File with the directories recently visited with dired."
-  :type '(file))
+  :type 'file)
 
 (defcustom dired-recent-ignored-prefix nil
   "Directories ignored by `dired-recent-mode'.
