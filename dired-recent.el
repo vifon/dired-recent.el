@@ -36,8 +36,6 @@
 
 ;;; Code:
 
-(require 'dash)
-
 (defgroup dired-recent nil
   "Dired visited paths history."
   :group 'dired)
@@ -98,7 +96,7 @@ Remove the last elements as appropriate according to
             (let ((new-list (cons path
                                   (delete path dired-recent-directories))))
               (if dired-recent-max-directories
-                  (-take dired-recent-max-directories new-list)
+                  (seq-take new-list dired-recent-max-directories)
                 new-list))))))
 
 ;;; The default C-x C-d (`list-directory') is utterly useless. I took
