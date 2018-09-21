@@ -1,8 +1,8 @@
 * dired-recent
   A history of paths visited with Emacs dired.
 
-** Installation 
-   
+** Installation
+
    Install from MELPA.
 
    #+BEGIN_EXAMPLE

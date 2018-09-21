@@ -3,7 +3,7 @@
 ;; Copyright (C) 2018  Wojciech Siewierski
 
 ;; Author: Wojciech Siewierski <wojciech dot siewierski at onet dot pl>
-;; URL: https://github.com/vifon/dired-recent
+;; URL: https://github.com/vifon/dired-recent.el
 ;; Keywords: files
 ;; Version: 0.9
 ;; Package-Requires: ((emacs "24"))
