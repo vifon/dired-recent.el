@@ -112,6 +112,18 @@ Remove the last elements as appropriate according to
       (goto-char (point-min))
       (setq dired-recent-directories (read (current-buffer))))))
 
+(defun dired-recent-cleanup ()
+  "Remove nonexistent directories from `dired-recent-directories'.
+
+Skips (preserves) the remote files as checking them would be
+potentially slow."
+  (interactive)
+  (setq dired-recent-directories
+        (seq-filter (lambda (x)
+                      (or (file-remote-p x)
+                          (file-directory-p x)))
+                    dired-recent-directories)))
+
 (defun dired-recent-save-list ()
   "Save the dired history to `dired-recent-directories-file'."
   (interactive)
