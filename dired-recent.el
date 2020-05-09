@@ -71,7 +71,29 @@ nil means to remember all."
   (interactive)
   (unless dired-recent-directories
     (dired-recent-load-list))
-  (dired (completing-read "Dired recent: " dired-recent-directories)))
+  (let* ((label (completing-read "Dired recent: " dired-recent-directories))
+         (res (or (get-text-property
+                   0 'dired-recent-restore-file-list
+                   ;; Get from original string stored in list, completing-read
+                   ;; strips the properties.
+                   (car (member label dired-recent-directories)))
+                  label)))
+    (cond ((functionp res)
+           (funcall res nil nil)
+           (when (equal (buffer-name) "*Find*")
+             ;; Message command after finish.
+             (let* ((proc (get-buffer-process (current-buffer)))
+                    (sentinel (process-sentinel proc)))
+               (set-process-sentinel
+                proc
+                (lambda (proc state)
+                  (funcall sentinel proc state)
+                  (message "%s Command was: %s %s"
+                           (current-message)
+                           find-program find-args))))))
+          ((or (stringp res)
+               (consp res))
+           (dired res)))))
 
 (defun dired-recent-ignored-p (path prefix)
   "Check if PATH starts with PREFIX and should be ignored by the dired history.
@@ -82,19 +104,52 @@ PREFIX is a list of paths that should not be stored in the dired history."
         (dired-recent-ignored-p path (cdr prefix)))))
 
 (defun dired-recent-path-save (&optional path)
-  "Add PATH or `default-directory' to the dired history.
+  "Add current dired listing to `dired-recent-directories'.
+
+PATH can be string or a list of format as first argument to
+`dired'. If not given get listing info from current dired buffer.
 
 Remove the last elements as appropriate according to
 `dired-recent-max-directories'."
-  (let ((path (or path default-directory)))
-    (unless (dired-recent-ignored-p (file-name-as-directory path)
-                                    dired-recent-ignored-prefix)
-      (setq dired-recent-directories
-            (let ((new-list (cons path
-                                  (delete path dired-recent-directories))))
-              (if dired-recent-max-directories
-                  (seq-take new-list dired-recent-max-directories)
-                new-list))))))
+  (let ((path (or path dired-directory)))
+    (unless (and (stringp path)
+                 (dired-recent-ignored-p (file-name-as-directory path)
+                                         dired-recent-ignored-prefix))
+      (let ((new (cond ((get-buffer-process (current-buffer))
+                        (let ((buf (current-buffer))
+                              (label (format "%s:%s"
+                                             (buffer-name)
+                                             ;; Indicate process directory in
+                                             ;; history name.
+                                             (abbreviate-file-name
+                                              default-directory))))
+                          ;; `revert-buffer-function' is set after `dired-mode'
+                          ;; call is finished, see `find-dired'.
+                          (run-at-time
+                           0 nil
+                           (lambda ()
+                             (when (buffer-live-p buf)
+                               (put-text-property
+                                0 1 'dired-recent-restore-file-list
+                                (buffer-local-value
+                                 'revert-buffer-function
+                                 buf) label))))
+                          label))
+                       ((consp path)
+                        (let ((label (file-name-nondirectory
+                                      (car path))))
+                          (put-text-property
+                           0 1 'dired-recent-restore-file-list
+                           (cons label (cdr path))
+                           label)
+                          label))
+                       (t path))))
+	    (setq dired-recent-directories
+              (let ((new-list (cons new
+                                    (delete new dired-recent-directories))))
+		        (if dired-recent-max-directories
+                    (seq-take new-list dired-recent-max-directories)
+                  new-list)))))))
 
 ;;; The default C-x C-d (`list-directory') is utterly useless. I took
 ;;; the liberty to use this handy keybinding.
