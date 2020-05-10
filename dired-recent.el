@@ -65,6 +65,9 @@ nil means to remember all."
           (const :tag "All" nil)
           (integer)))
 
+(defvar find-program)
+(defvar find-args)
+
 ;;;###autoload
 (defun dired-recent-open ()
   "Show the dired history.  See: `dired-recent-mode'."
