@@ -149,10 +149,10 @@ Remove the last elements as appropriate according to
                            label)
                           label))
                        (t path))))
-	    (setq dired-recent-directories
+        (setq dired-recent-directories
               (let ((new-list (cons new
                                     (delete new dired-recent-directories))))
-		        (if dired-recent-max-directories
+                (if dired-recent-max-directories
                     (seq-take new-list dired-recent-max-directories)
                   new-list)))))))
 
