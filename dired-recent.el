@@ -133,14 +133,16 @@ Remove the last elements as appropriate according to
                                 0 1 'dired-recent-restore-file-list
                                 (buffer-local-value
                                  'revert-buffer-function
-                                 buf) label))))
+                                 buf)
+                                (copy-sequence label)))))
                           label))
                        ((consp path)
                         (let ((label (file-name-nondirectory
                                       (car path))))
                           (put-text-property
                            0 1 'dired-recent-restore-file-list
-                           (cons label (cdr path))
+                           (cons (copy-sequence label)
+                                 (cdr path))
                            label)
                           label))
                        (t path))))
