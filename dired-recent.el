@@ -137,7 +137,7 @@ Remove the last elements as appropriate according to
                                 (buffer-local-value
                                  'revert-buffer-function
                                  buf)
-                                (copy-sequence label)))))
+                                label))))
                           label))
                        ((consp path)
                         (let ((label (file-name-nondirectory
