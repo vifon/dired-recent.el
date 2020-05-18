@@ -68,7 +68,7 @@ nil means to remember all."
 (defcustom dired-recent-add-virtual-listings nil
   "Whether to add virtual listings to history.
 
-If this option is nil special dired buffers created by a
+If this option is nil special dired buffers created by
 processes (see `find-dired') or created by passing a list to
 `dired' are ignored."
   :type 'boolean)
