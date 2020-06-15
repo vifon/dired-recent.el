@@ -65,13 +65,46 @@ nil means to remember all."
           (const :tag "All" nil)
           (integer)))
 
+(defcustom dired-recent-add-virtual-listings nil
+  "Whether to add virtual listings to history.
+
+If this option is nil special dired buffers created by
+processes (see `find-dired') or created by passing a list to
+`dired' are ignored."
+  :type 'boolean)
+
+(defvar find-program)
+(defvar find-args)
+
 ;;;###autoload
 (defun dired-recent-open ()
   "Show the dired history.  See: `dired-recent-mode'."
   (interactive)
   (unless dired-recent-directories
     (dired-recent-load-list))
-  (dired (completing-read "Dired recent: " dired-recent-directories)))
+  (let* ((label (completing-read "Dired recent: " dired-recent-directories))
+         (res (or (get-text-property
+                   0 'dired-recent-restore-file-list
+                   ;; Get from original string stored in list, completing-read
+                   ;; strips the properties.
+                   (car (member label dired-recent-directories)))
+                  label)))
+    (cond ((functionp res)
+           (funcall res nil nil)
+           (when (equal (buffer-name) "*Find*")
+             ;; Message command after finish.
+             (let* ((proc (get-buffer-process (current-buffer)))
+                    (sentinel (process-sentinel proc)))
+               (set-process-sentinel
+                proc
+                (lambda (proc state)
+                  (funcall sentinel proc state)
+                  (message "%s Command was: %s %s"
+                           (current-message)
+                           find-program find-args))))))
+          ((or (stringp res)
+               (consp res))
+           (dired res)))))
 
 (defun dired-recent-ignored-p (path prefix)
   "Check if PATH starts with PREFIX and should be ignored by the dired history.
@@ -82,19 +115,98 @@ PREFIX is a list of paths that should not be stored in the dired history."
         (dired-recent-ignored-p path (cdr prefix)))))
 
 (defun dired-recent-path-save (&optional path)
-  "Add PATH or `default-directory' to the dired history.
+  "Add dired listing to `dired-recent-directories'.
+
+PATH can be string or a list of format as the first argument to
+`dired'.
+
+If PATH is not given add listing according to `current-buffer'
+using `dired-recent-get-buffer-label'.
 
 Remove the last elements as appropriate according to
 `dired-recent-max-directories'."
-  (let ((path (or path default-directory)))
-    (unless (dired-recent-ignored-p (file-name-as-directory path)
-                                    dired-recent-ignored-prefix)
+  (let* ((label (cond ((stringp path)
+                       (dired-recent-get-label path))
+                      ((consp path)
+                       (dired-recent-get-list-label path))
+                      ((not path)
+                       (dired-recent-get-buffer-label (current-buffer))))))
+    (when label
       (setq dired-recent-directories
-            (let ((new-list (cons path
-                                  (delete path dired-recent-directories))))
+            (let ((new-list (cons label
+                                  (delete label dired-recent-directories))))
               (if dired-recent-max-directories
                   (seq-take new-list dired-recent-max-directories)
                 new-list))))))
+
+(defun dired-recent-get-process-label (&optional buf)
+  "Get label for process buffer BUF.
+
+BUF is a dired buffer with an associated process. The returned
+label is supposed to be added to `dired-recent-directories'."
+  (with-current-buffer (or buf (current-buffer))
+    (let ((label (format "%s:%s"
+                         (buffer-name)
+                         ;; Indicate process directory in
+                         ;; history name.
+                         (abbreviate-file-name
+                          default-directory))))
+      ;; `revert-buffer-function' is set after `dired-mode'
+      ;; call is finished, see `find-dired'.
+      (run-at-time
+       0 nil
+       (lambda ()
+         (when (buffer-live-p buf)
+           (put-text-property
+            0 1 'dired-recent-restore-file-list
+            (buffer-local-value
+             'revert-buffer-function
+             buf)
+            label))))
+      label)))
+
+(defun dired-recent-get-list-label (lst)
+  "Get label for dired listing LST.
+
+LST is a list of format as first argument to `dired'. The
+returned label is supposed to be added to
+`dired-recent-directories'."
+  (let ((label (file-name-nondirectory (car lst))))
+    (put-text-property
+     0 1 'dired-recent-restore-file-list
+     (cons (copy-sequence label)
+           (cdr lst))
+     label)
+    label))
+
+(defun dired-recent-get-label (path)
+  "Get label for path PATH.
+
+Label is supposed to be added to `dired-recent-directories'."
+  (unless (dired-recent-ignored-p
+           (file-name-as-directory path)
+           dired-recent-ignored-prefix)
+    path))
+
+(defun dired-recent-get-buffer-label (&optional buf)
+  "Get label for dired buffer BUF.
+
+BUF is a dired buffer and defaults to `current-buffer'.
+
+Label is supposed to be added to `dired-recent-directories'. See
+`dired-recent-add-virtual-listings' to control which listings are
+ignored."
+  (with-current-buffer (or buf (current-buffer))
+    (let ((path dired-directory))
+      (cond ((and (derived-mode-p 'dired-mode)
+                  (get-buffer-process (current-buffer)))
+             (when dired-recent-add-virtual-listings
+               (dired-recent-get-process-label (current-buffer))))
+            ((consp path)
+             (when dired-recent-add-virtual-listings
+               (dired-recent-get-list-label path)))
+            ((stringp path)
+             (dired-recent-get-label path))))))
 
 ;;; The default C-x C-d (`list-directory') is utterly useless. I took
 ;;; the liberty to use this handy keybinding.
