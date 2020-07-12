@@ -197,7 +197,9 @@ Label is supposed to be added to `dired-recent-directories'. See
 `dired-recent-add-virtual-listings' to control which listings are
 ignored."
   (with-current-buffer (or buf (current-buffer))
-    (let ((path dired-directory))
+    (let ((path (if dired-recent-add-virtual-listings
+                    dired-directory
+                  default-directory)))
       (cond ((and (derived-mode-p 'dired-mode)
                   (get-buffer-process (current-buffer)))
              (when dired-recent-add-virtual-listings
