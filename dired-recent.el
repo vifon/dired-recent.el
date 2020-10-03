@@ -242,7 +242,9 @@ potentially slow."
   "Save the dired history to `dired-recent-directories-file'."
   (interactive)
   (with-temp-file dired-recent-directories-file
-    (prin1 dired-recent-directories (current-buffer))))
+    (let ((print-length nil)
+          (print-level nil))
+      (prin1 dired-recent-directories (current-buffer)))))
 
 ;;;###autoload
 (define-minor-mode dired-recent-mode
