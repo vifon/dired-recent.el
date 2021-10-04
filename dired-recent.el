@@ -76,13 +76,18 @@ processes (see `find-dired') or created by passing a list to
 (defvar find-program)
 (defvar find-args)
 
+(eval-when-compile
+  ;; Ensure we can dynamically let-bind this even when compiled with lexical-let
+  (defvar selectrum-should-sort))
+
 ;;;###autoload
 (defun dired-recent-open ()
   "Show the dired history.  See: `dired-recent-mode'."
   (interactive)
   (unless dired-recent-directories
     (dired-recent-load-list))
-  (let* ((label (completing-read "Dired recent: " dired-recent-directories))
+  (let* ((selectrum-should-sort nil)
+         (label (completing-read "Dired recent: " dired-recent-directories))
          (res (or (get-text-property
                    0 'dired-recent-restore-file-list
                    ;; Get from original string stored in list, completing-read
