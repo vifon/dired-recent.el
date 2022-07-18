@@ -1,4 +1,4 @@
-* dired-recent [[http://melpa.milkbox.net/#/dired-recent][file:http://melpa.milkbox.net/packages/dired-recent-badge.svg]]
+* dired-recent [[https://melpa.org/#/dired-recent][file:https://melpa.org/packages/dired-recent-badge.svg]]
   A history of paths visited with Emacs dired.
 
 ** Installation
